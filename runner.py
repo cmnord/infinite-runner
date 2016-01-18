@@ -7,14 +7,7 @@ Completed by:
     Janelle Sands (jcsands@mit.edu)
 """
 
-"""
-***** Langton's Ant *****
-"""
-
-# Algorithm described at http://en.wikipedia.org/wiki/Langton%27s_ant
-
 import pygame, sys
-import tests as T
 
 ### Global Variables
 WIDTH = 75  # this is the width of an individual square
@@ -200,57 +193,24 @@ class Board:
 
         self.size = size
         
-        #---Initializes Squares (the "Board")---#
-        self.squares = pygame.sprite.RenderPlain()
-        self.boardSquares = []
-        
-        #---Populate boardSquares with Squares---#
-        for rows in range(size):
-            columns = []
-            for cols in range(size):
-                #initialize squares
-                s = Square(rows, cols, white)
-                #add them to the squares group
-                columns.append(s)
-                self.squares.add(s)
-            #add columns list to boardSquares list to create 2d array
-            self.boardSquares.append(columns)
+        #---Initialize the Player---#
+        self.player=Player(self,size/2,size/2)
 
-        #---Initialize the Ant---#
-        self.ant = Ant(self, size/2, size/2)
-                          
-        #---Adds Ant to the "theAnt" Sprite List---#
-        self.theAnt = pygame.sprite.RenderPlain()
-        self.theAnt.add(self.ant)
-
-    def get_square(self, x, y):
-        """
-        Given an (x, y) pair, return the Square at that location
-        """
-        return self.boardSquares[y][x]
-
-    def rotate_ant_get_square(self):
-        """ 
-        Rotate the ant, depending on the color of the square that it's on,
-        and returns the square that the ant is currently on
-        """
-        if self.ant.get_current_square().color == black:
-            self.ant.rotate_left()
-        if self.ant.get_current_square().color == white:
-            self.ant.rotate_right()
-        return self.ant.get_current_square()
+        #---Adds Player to the "thePlayer" Sprite List---#
+        self.thePlayer = pygame.sprite.RenderPlain()
+        self.thePlayer.add(self.player)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row):
         pygame.sprite.Sprite.__init__(self)
         self.col = col
         self.row = row
-        self.image = pygame.image.load("ant.png").convert_alpha()
+        self.image = pygame.image.load("player.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rotation = (0, 1) # pointing up
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
+        health=10
         
     def get_current_square(self):
         """
@@ -261,13 +221,39 @@ class Player(pygame.sprite.Sprite):
     def move_left(self):
         pass
         
-
     def move_right(self):
         pass
+        
+    def get_location(self):
+        #Returns the square? that the player is currently on? Returns rows and col?
+   
+    def move_left(self):
+        #Moves the player one column to the left
+        #If the Player is at an edge, the Player will not move off-screen or wrap around.
+        self.col -= 1
     
+        #actually changes player's location
+        self.rect.x = get_col_left_loc(self.col)
+        self.rect.y = get_row_top_loc(self.row)
+
+    def move_right(self):
+        #Moves the player one column to the right
+        #If the Player is at an edge, the Player will not move off-screen or wrap around.
+        self.col += 1
+    
+        #actually changes player's location
+        self.rect.x = get_col_left_loc(self.col)
+        self.rect.y = get_row_top_loc(self.row)
+
+    def take_damage(self):
+        #Decrease the health of the Player by a given amount if the Player collides with an Obstacle
+        pass
+
+    def increase_health(self):
+        #Increase the health of the Player by a given amount if the Player collides with a Food
+        pass
 
 if __name__ == "__main__":
     # Uncomment this line to call new_game when this file is run:
     new_game()
-    
     pass
