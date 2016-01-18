@@ -363,12 +363,8 @@ class Item(pygame.sprite.Sprite):
     def remove_item(self):
         pass
         
-    def get_index():
+    def get_index(self):
         #returns the coordinates of the item in a list, e.g. [0, 1]
-        pass
-
-    def remove_item():
-        #removes the item
         pass
 
 class Obstacle(Item):
