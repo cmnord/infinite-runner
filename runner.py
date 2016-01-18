@@ -5,6 +5,7 @@ Completed by:
     Claire Nord   (cnord@mit.edu)
     Shavina Chau  (shavinac@mit.edu)
     Janelle Sands (jcsands@mit.edu)
+    Michelle Chen (mxchen@mit.edu)
 """
 
 import pygame, sys
@@ -12,6 +13,8 @@ import pygame, sys
 ### Global Variables
 WIDTH = 75  # this is the width of an individual square
 HEIGHT = 75 # this is the height of an individual square
+NUM_ROWS = 8 #number of rows
+NUM_COLS = 4 #number of columns
 
 # RGB Color definitions
 black = (0, 0, 0)
@@ -215,7 +218,7 @@ class Board:
         self.thePlayer = pygame.sprite.RenderPlain()
         self.thePlayer.add(self.player)
     
-    def move_down(self, row, col):
+    def move_down(self):
         """
         Will move the item at (row, col) to the row below
         Will check if the item will collide with the player, 
@@ -223,6 +226,7 @@ class Board:
         and call appropriate damage/health functions and remove function
         Will remove items if they moved out of bounds
         """
+        
         pass
     
     def new_food(self, row, col):
@@ -248,7 +252,29 @@ class Board:
         """
         Will call move_down on every square in the grid
         """
-        pass
+        new_items = []
+        for item in self.items: #items = list of obstacles and food
+            if(item.move_down(self.player)): 
+                #if move_down returns true, it has moved and stays on the board
+                new_items.append(item)
+        self.items = new_items
+        
+        #Refilling the squares ----
+        self.squares = pygame.sprite.RenderPlain()
+        self.boardSquares = []
+        
+        for i in range(self.size): #rows in 2d array (size = size of grid (10))
+            col = []
+            for j in range(self.size): #cols #j=col, i=row
+                s = Square(i,j,white)
+                col.append(s)
+                self.squares.add(s)
+            self.boardSquares.append(col)
+        
+        #Adding the self.items list into the boardSquares array
+        for j in self.items:
+            location = j.get_location()
+            self.boardSquares[location[0]][location[1]] = j
         
     def is_valid(self, section_of_grid):
         """
@@ -296,12 +322,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
-    def take_damage(self):
-        #Decrease the health of the Player by a given amount if the Player collides with an Obstacle
-        pass
-
-    def increase_health(self):
-        #Increase the health of the Player by a given amount if the Player collides with a Food
+    def modify_health(self, amount):
+        #Increase/decrease the health of the Player by a given amount if the Player collides with a Food
         pass
 
 class Item(pygame.sprite.Sprite):
@@ -312,33 +334,47 @@ class Item(pygame.sprite.Sprite):
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
+        self.potency = 1
 
-    def get_index()
+    def get_location(self):
         #returns the coordinates of the item in a list, e.g. [0, 1]
         pass
 
-    def remove_item()
+    def move_down(self, player):
+        if self.get_index()[0] == NUM_ROWS:
+            self.remove_item()
+            return False
+        elif self.get_index() == player.get_index():
+            player.modify_health(self.potency)
+            self.remove_item()
+            return False
+        else:
+            self.row += 1
+            return True
+    
+    def remove_item(self):
         #removes the item
         pass
 
 class Obstacle(Item):
-    def __init__(self, col, power)
+    def __init__(self, col, power):
         super(Obstacle, self).__init__(col)
         self.power = power
         self.image = pygame.image.load("obstacle.png").convert_alpha()
+        self.potency = power * -1
 
 
 class Food (pygame.sprite.Sprite):
     def __init__ (self, board, col, nutrients):
         super(Obstacle, self).__init__(col)
         self.image = pygame.image.load("strawberry.png").convert_alpha()
-        self.nutrients=nutrients
+        self.potency = nutrients
         
-    def effect():
+    def effect(self):
         #will apply the effect of the powerup on the game
         pass
-    
+
 if __name__ == "__main__":
     # Uncomment this line to call new_game when this file is run:
-    new_game()
+    # new_game()
     pass
