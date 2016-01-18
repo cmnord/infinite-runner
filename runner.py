@@ -269,6 +269,30 @@ class Player(pygame.sprite.Sprite):
         #Increase the health of the Player by a given amount if the Player collides with a Food
         pass
 
+class Food (pygame.sprite.Sprite):
+    def __init__ (self, board, col, nutrients):
+        pass
+        self.nutrients=nutrients
+        self.image = pygame.image.load("strawberry.png").convert_alpha()
+        self.col = col
+        self.row = 0
+        self.rect = self.image.get_rect()
+        self.board = board
+        self.rect.x = get_col_left_loc(self.col)
+        self.rect.y = get_row_top_loc(self.row)
+
+    def get_location():
+        #return the location of the Food on the Board
+        pass
+
+    def effect():
+        #will apply the effect of the powerup on the game
+        pass
+        
+    def remove_from_board():
+        #remove the Food object from the board after collision 
+        #or after it travels "off-screen" i.e. out of the Board range
+
 if __name__ == "__main__":
     # Uncomment this line to call new_game when this file is run:
     new_game()
