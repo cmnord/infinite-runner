@@ -330,9 +330,16 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
-    def modify_health(self, amount):
-        #Increase/decrease the health of the Player by a given amount if the Player collides with a Food
-        pass
+    def modify_health(self,potency): #get the potency from the check_potency method
+        #Increase/decrease the health of the Player by the amount of potency of the object it collides with
+        self.health += item.potency
+
+    def check_potency (self,objs): #objs is a list
+        #receives object in the list of the objects at the bottom row
+        #We only care about the square that the player is on.  So get player location.  If there's an object there that's a Food or Obstacle, then get potency of item and modify health.
+        	item = objs[self.col]
+        	if isinstance(item,Food) or isinstance(item,Obstacle): #Objs is a list being passed to us.  If nothing there, it's just a Square.
+        		modify_health(item.get_potency()) #Modify player health
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col):
@@ -345,8 +352,11 @@ class Item(pygame.sprite.Sprite):
         self.potency = 1
 
     def get_location(self):
-        #returns the coordinates of the item in a list, e.g. [0, 1]
-        pass
+    	#note: using this for modify_health method in Player class
+        return list([self.row, self.col]) #returns the coordinates of the item in a list, e.g. [0, 1]
+
+    def get_potency(self): #returns the item potency for the modify_health method in Player class
+    	return self.potency 
 
     def move_down(self, player):
         if self.get_index()[0] == NUM_ROWS:
