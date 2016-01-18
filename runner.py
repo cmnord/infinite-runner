@@ -304,30 +304,40 @@ class Player(pygame.sprite.Sprite):
         #Increase the health of the Player by a given amount if the Player collides with a Food
         pass
 
-class Food (pygame.sprite.Sprite):
-    def __init__ (self, board, col, nutrients):
-        pass
-        self.nutrients=nutrients
-        self.image = pygame.image.load("strawberry.png").convert_alpha()
-        self.col = col
+class Item(pygame.sprite.Sprite):
+    def __init__(self, board, col):
         self.row = 0
+        self.col = col
         self.rect = self.image.get_rect()
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
-    def get_location():
-        #return the location of the Food on the Board
+    def get_index()
+        #returns the coordinates of the item in a list, e.g. [0, 1]
         pass
 
+    def remove_item()
+        #removes the item
+        pass
+
+class Obstacle(Item):
+    def __init__(self, col, power)
+        super(Obstacle, self).__init__(col)
+        self.power = power
+        self.image = pygame.image.load("obstacle.png").convert_alpha()
+
+
+class Food (pygame.sprite.Sprite):
+    def __init__ (self, board, col, nutrients):
+        super(Obstacle, self).__init__(col)
+        self.image = pygame.image.load("strawberry.png").convert_alpha()
+        self.nutrients=nutrients
+        
     def effect():
         #will apply the effect of the powerup on the game
         pass
-        
-    def remove_from_board():
-        #remove the Food object from the board after collision 
-        #or after it travels "off-screen" i.e. out of the Board range
-
+    
 if __name__ == "__main__":
     # Uncomment this line to call new_game when this file is run:
     new_game()
