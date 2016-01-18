@@ -192,7 +192,22 @@ class Board:
     def __init__(self, size):
 
         self.size = size
+        self.items = [] #a list of every food and obstacle object
+                        #new items created (at the top) will be appended
         
+        #---Initializes Squares (the "Board")---#
+        self.squares = pygame.sprite.RenderPlain()
+        self.boardSquares = []
+        
+        #---Populate boardSquares with Squares---#
+        for i in range(size): #rows in 2d array (size = size of grid (10))
+            col = []
+            for j in range(size): #cols #j=col, i=row
+                s = Square(i,j,white)
+                col.append(s)
+                self.squares.add(s)
+            self.boardSquares.append(col)
+            
         #---Initialize the Player---#
         self.player = Player(self,size/2,size/2)
 
@@ -201,24 +216,44 @@ class Board:
         self.thePlayer.add(self.player)
     
     def move_down(self, row, col):
+        """
+        Will move the item at (row, col) to the row below
+        Will check if the item will collide with the player, 
+        will prevent item from "overwriting" the player,
+        and call appropriate damage/health functions and remove function
+        Will remove items if they moved out of bounds
+        """
         pass
     
     def new_food(self, row, col):
+        """
+        Will create a Food object at the location (row, col)
+        """
         pass
     
     def new_obstacle(self, row, col):
+        """
+        Will create an Obstacle object at the location (row, col)
+        """
         pass
         
     def remove_object(self, row, col):
+        """
+        Will remove the object at the location (row, col)
+        "Remove" = replace with a white Square object
+        """
         pass
         
     def update_board(self):
-        pass
-        
-    def is_collision(self, player, items):
+        """
+        Will call move_down on every square in the grid
+        """
         pass
         
     def is_valid(self, section_of_grid):
+        """
+        Check if a section of grid is passable
+        """
         pass
 
 class Player(pygame.sprite.Sprite):
