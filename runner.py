@@ -240,12 +240,12 @@ class Board:
             self.ant.rotate_right()
         return self.ant.get_current_square()
 
-class Ant(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row):
         pygame.sprite.Sprite.__init__(self)
         self.col = col
         self.row = row
-        self.set_pic()
+        self.image = pygame.image.load("ant.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rotation = (0, 1) # pointing up
         self.board = board
@@ -258,39 +258,13 @@ class Ant(pygame.sprite.Sprite):
         """
         return self.board.get_square(self.col, self.row)
    
-    def rotate_left(self):
-        #Rotates the ant 90 degrees counterclockwise
-        self.image = pygame.transform.rotate(self.image, 90)
-        self.rotation = (-1 * self.rotation[1], self.rotation[0])
+    def move_left(self):
+        pass
         
 
-    def rotate_right(self):
-        #Rotates the ant 90 degrees clockwise
-        self.image = pygame.transform.rotate(self.image, -90)
-        self.rotation = (self.rotation[1], -1 * self.rotation[0])
+    def move_right(self):
+        pass
     
-    
-    
-    def step_forward(self, board):
-        """
-        Make the ant take a step forward in whatever direction it's currently pointing.
-        Don't forget - row numbers increase from top to bottom and column numbers
-        increase from left to right!
-        """
-        self.col += self.rotation[0]
-        self.row -= self.rotation[1]
-
-        #actually changes ant's location
-        self.rect.x = get_col_left_loc(self.col)
-        self.rect.y = get_row_top_loc(self.row)
-    
-    def set_pic(self):
-        """
-        Sets the picture that represents our Ant.
-        If you want to use a new picture, you'll need to change
-        this method.
-        """
-        self.image = pygame.image.load("ant.png").convert_alpha()
 
 if __name__ == "__main__":
     # Uncomment this line to call new_game when this file is run:
