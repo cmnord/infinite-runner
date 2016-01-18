@@ -275,22 +275,30 @@ class Player(pygame.sprite.Sprite):
         return self.board.get_square(self.col, self.row)
    
     def get_location(self):
-        #Returns the square? that the player is currently on? Returns rows and col?
-        pass
+        """
+        Returns a list (rows,cols) of the player's location
+        """
+
+        return list(self.row, self.col)
         
     def move_left(self):
-        #Moves the player one column to the left
-        #If the Player is at an edge, the Player will not move off-screen or wrap around.
-        self.col -= 1
-    
+        """
+        Moves the player one column to the left 
+        If the Player is at an edge, the Player will not move off-screen or wrap around.
+        """
+        if self.col>0: #not in the leftmost column
+            self.col -= 1
         #actually changes player's location
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
     def move_right(self):
-        #Moves the player one column to the right
-        #If the Player is at an edge, the Player will not move off-screen or wrap around.
-        self.col += 1
+        """
+        Moves the player one column to the right
+        If the Player is at an edge, the Player will not move off-screen or wrap around.
+        """
+        if self.col<3: #not in rightmost column
+            self.col += 1
     
         #actually changes player's location
         self.rect.x = get_col_left_loc(self.col)
@@ -313,16 +321,16 @@ class Item(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
-    def get_index()
+    def get_index():
         #returns the coordinates of the item in a list, e.g. [0, 1]
         pass
 
-    def remove_item()
+    def remove_item():
         #removes the item
         pass
 
 class Obstacle(Item):
-    def __init__(self, col, power)
+    def __init__(self, col, power):
         super(Obstacle, self).__init__(col)
         self.power = power
         self.image = pygame.image.load("obstacle.png").convert_alpha()
