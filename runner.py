@@ -194,11 +194,32 @@ class Board:
         self.size = size
         
         #---Initialize the Player---#
-        self.player=Player(self,size/2,size/2)
+        self.player = Player(self,size/2,size/2)
 
         #---Adds Player to the "thePlayer" Sprite List---#
         self.thePlayer = pygame.sprite.RenderPlain()
         self.thePlayer.add(self.player)
+    
+    def move_down(self, row, col):
+        pass
+    
+    def new_food(self, row, col):
+        pass
+    
+    def new_obstacle(self, row, col):
+        pass
+        
+    def remove_object(self, row, col):
+        pass
+        
+    def update_board(self):
+        pass
+        
+    def is_collision(self, player, items):
+        pass
+        
+    def is_valid(self, section_of_grid):
+        pass
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row):
@@ -210,7 +231,7 @@ class Player(pygame.sprite.Sprite):
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
-        health=10
+        self.health=10
         
     def get_current_square(self):
         """
@@ -218,15 +239,10 @@ class Player(pygame.sprite.Sprite):
         """
         return self.board.get_square(self.col, self.row)
    
-    def move_left(self):
-        pass
-        
-    def move_right(self):
-        pass
-        
     def get_location(self):
         #Returns the square? that the player is currently on? Returns rows and col?
-   
+        pass
+        
     def move_left(self):
         #Moves the player one column to the left
         #If the Player is at an edge, the Player will not move off-screen or wrap around.
