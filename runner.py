@@ -102,7 +102,8 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
         if again == 'yes':
             new_game()
     
-    random_number = int(random.uniform(150,300))
+    food_random_number = int(random.uniform(150,300)) #food is more rare than obstacles
+    obstacle_random_number = int(random.uniform(30,70)
 
     while stop == False:        
         for event in pygame.event.get():
@@ -140,15 +141,39 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             moveCount += 1
 
 
-            
             #make a random food in a random location every 150-300 clock ticks
-            if moveCount%random_number==0:
-                added_food=board.new_food(int(random.uniform(0,4)))
-                board.theItems.add(added_food) #adds new food to item Sprites list 
+            #possible issue if food and obstacle appear in same column: in this case, just create an obstacle, no food
+            def add_food():
+            	board.theItems.add(added_food) #adds new food to item Sprites list 
                 board.theItems.draw(screen) # draw all item Sprites
                 pygame.display.flip()
-                random_number = int(random.uniform(150,300))
+                food_random_number = int(random.uniform(150,300))
                 print 'food'
+
+            def add_obstacle():
+            	board.theItems.add(added_obstacle) #adds new obstacle to item Sprites list
+            	board.theItems.draw(screen)
+            	pygame.display.flip()
+            	obstacle_random_number = int(random.uniform(30,70))
+            	print 'obstacle'
+
+        	#Add a food when the move count is a multiple of the random number
+            if moveCount%food_random_number==0:
+            	added_food = board.new_food(int(random.uniform(0, 4))) #Create a food
+            	if food_random_number == obstacle_random_number: #If food and obstacle should both be created, create an obstacle as well
+					added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
+					if added_food == added_obstacle: #If they're in the same column, add only the obstacle
+						add_obstacle()
+					else:	#If they're not in the same column, add both
+						add_food()
+						add_obstacle()
+            	else:	#If the obstacle number is not the same as the food number
+                	add_food()
+            #Add an obstacle when the move count is a multiple of the random number
+            elif moveCount%obstacle_random_number==0:
+            	added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
+            	add_obstacle()
+
             # ------------------------
             if moveCount % 10 == 0:
                 #print "Move down!!!"
