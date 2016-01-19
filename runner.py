@@ -347,6 +347,7 @@ class Player(pygame.sprite.Sprite):
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col):
+        pygame.sprite.Sprite.__init__(self)
         self.row = 0
         self.col = col
         self.rect = self.image.get_rect()
@@ -383,15 +384,15 @@ class Item(pygame.sprite.Sprite):
 
 class Obstacle(Item):
     def __init__(self, board, col, power):
+        self.image = pygame.image.load("obstacle.png").convert_alpha()
         super(Obstacle, self).__init__(board, col)
         self.power = power
-        self.image = pygame.image.load("obstacle.png").convert_alpha()
         self.potency = power * -1
 
-class Food (pygame.sprite.Sprite):
+class Food (Item):
     def __init__ (self, board, col, nutrients):
-        super(Food, self).__init__(board, col)
         self.image = pygame.image.load("strawberry.png").convert_alpha()
+        super(Food, self).__init__(board, col)
         self.rect=self.image.get_rect()
         self.potency = nutrients
         
