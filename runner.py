@@ -10,6 +10,7 @@ Completed by:
 
 import pygame, sys
 import random
+from example_menu import main as menu
 
 ### Global Variables
 WIDTH = 75  # this is the width of an individual square
@@ -70,8 +71,14 @@ def new_game():
     moveCount = 0
 
     clock = pygame.time.Clock()
-
-    main_loop(screen, board, moveCount, clock, False, False)
+    #Menu function
+    result = menu(screen)
+    if result == 0: #THIS MEANS USER SELECTED START GAME
+        main_loop(screen, board, moveCount, clock, False, False)
+    elif result == 1: #USER SELECTED LOAD GAME
+        print "you can't load games -- yet!"
+    elif result == 2: #USER SELETED OPTIONS
+        print "you have no options -- yet!"
 
 def draw_grid(screen):
     """
