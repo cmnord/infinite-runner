@@ -102,7 +102,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
         if again == 'yes':
             new_game()
     
-    random_number = int(random.uniform(1,50))
+    random_number = int(random.uniform(150,300))
 
     while stop == False:        
         for event in pygame.event.get():
@@ -143,15 +143,22 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             
             #make a random food in a random location every 150-300 clock ticks
             if moveCount%random_number==0:
-                added_food=board.new_food(int(random.uniform(0,3)))
+                added_food=board.new_food(int(random.uniform(0,4)))
                 board.theItems.add(added_food) #adds new food to item Sprites list 
                 board.theItems.draw(screen) # draw all item Sprites
                 pygame.display.flip()
-                random_number = int(random.uniform(1,50))
+                random_number = int(random.uniform(150,300))
                 print 'food'
-
             # ------------------------
-            
+            if moveCount % 10 == 0:
+                #print "Move down!!!"
+                board.update_board() #will progress everything 1 row down
+
+                board.squares.draw(screen) # draw Sprites (Squares)
+                draw_grid(screen)
+                board.thePlayer.draw(screen) # draw player Sprite
+                board.theItems.draw(screen)
+                pygame.display.flip()
 
     pygame.quit() # closes things, keeps idle from freezing
 
@@ -214,18 +221,12 @@ class Board(object):
         self.thePlayer.add(self.player)
 
         self.theItems = pygame.sprite.RenderPlain()
-        #later, add a way to create items
-        #self.theItems.add(self.item)
+        #Sprite group for items
     
     def move_down(self):
         """
-        Will move the item at (row, col) to the row below
-        Will check if the item will collide with the player, 
-        will prevent item from "overwriting" the player,
-        and call appropriate damage/health functions and remove function
-        Will remove items if they moved out of bounds
+        Probably unneeded now; everything is in move_down in item class
         """
-        
         pass
     
     def new_food(self, col, nutrients=1):
@@ -233,6 +234,7 @@ class Board(object):
         Will create a Food object at the location (row=0, col)
         """
         self.boardSquares[0][col] = Food(self,col, nutrients)
+        self.items.append(self.boardSquares[0][col])
         return self.boardSquares[0][col]
         #nutrients = how much it heals
     
@@ -241,6 +243,7 @@ class Board(object):
         Will create an Obstacle object at the location (row, col)
         """
         self.boardSquares[0][col] = Obstacle(self, col, power)
+        self.items.append(self.boardSquares[0][col])
         return self.boardSquares[0][col]
         #power = how much damage it deals
         
@@ -256,10 +259,13 @@ class Board(object):
         Will call move_down on every square in the grid
         """
         new_items = []
+        self.theItems = pygame.sprite.RenderPlain()
         for item in self.items: #items = list of obstacles and food
             if(item.move_down(self.player)): 
                 #if move_down returns true, it has moved and stays on the board
                 new_items.append(item)
+                self.theItems.add(item)
+
         self.items = new_items
         
         #Refilling the squares ----
@@ -276,8 +282,8 @@ class Board(object):
         
         #Adding the self.items list into the boardSquares array
         for k in self.items:
-            location = k.get_location()
-            self.boardSquares[location[0]][location[1]] = k
+            location = k.get_location() #returns a list
+            self.boardSquares[location[0]][location[1]] = k            
         
     def is_valid(self, section_of_grid):
         """
@@ -308,7 +314,7 @@ class Player(pygame.sprite.Sprite):
         Returns a list (rows,cols) of the player's location
         """
 
-        return list(self.row, self.col)
+        return [self.row, self.col]
         
     def move_left(self):
         """
@@ -363,15 +369,20 @@ class Item(pygame.sprite.Sprite):
     	return self.potency 
 
     def move_down(self, player):
-        if self.get_index()[0] == NUM_ROWS:
+        #print "Got to the move_down function!"
+        if self.get_location()[0] >= NUM_ROWS-1: #if in row 7, remove
             self.remove_item()
+            #print "Out of bounds!"
             return False
-        elif self.get_index() == player.get_index():
+        elif self.get_location() == player.get_location():
             player.modify_health(self.potency)
             self.remove_item()
+            #print "Collision!"
             return False
         else:
             self.row += 1
+            self.rect.y = get_row_top_loc(self.row)
+            #print "Moved down!"
             return True
     
     def remove_item(self):
