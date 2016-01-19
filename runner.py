@@ -9,6 +9,7 @@ Completed by:
 """
 
 import pygame, sys
+import random
 
 ### Global Variables
 WIDTH = 75  # this is the width of an individual square
@@ -93,12 +94,16 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
     board.thePlayer.draw(screen) # draw player Sprite
     pygame.display.flip() # update screen
     board.theItems.draw(screen)
+
    
     #how to quit the game
     if stop == True:
         again = raw_input("Would you like to play again? If yes, type 'yes'\n")
         if again == 'yes':
             new_game()
+    
+    random_number = int(random.uniform(1,50))
+
     while stop == False:        
         for event in pygame.event.get():
             if event.type == pygame.QUIT: #user clicks close
@@ -121,11 +126,11 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                         pause = False
                     else:
                         pause = True
-
         
         if stop == False and pause == False: 
+            print random_number
             board.squares.draw(screen) # draw Sprites (Squares)
-            # draw the grid here
+            # draw the grid herer
             draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
         
@@ -133,7 +138,20 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
+
+
+            
+            #make a random food in a random location every 150-300 clock ticks
+            if moveCount%random_number==0:
+                added_food=board.new_food(int(random.uniform(0,3)))
+                board.theItems.add(added_food) #adds new food to item Sprites list 
+                board.theItems.draw(screen) # draw all item Sprites
+                pygame.display.flip()
+                random_number = int(random.uniform(1,50))
+                print 'food'
+
             # ------------------------
+            
 
     pygame.quit() # closes things, keeps idle from freezing
 
@@ -211,18 +229,20 @@ class Board(object):
         
         pass
     
-    def new_food(self, row, col, nutrients=1):
+    def new_food(self, col, nutrients=1):
         """
         Will create a Food object at the location (row, col)
         """
-        self.boardSquares[row][col] = Food(self, col, nutrients)
+        self.boardSquares[0][col] = Food(self,col, nutrients)
+        return Food(self,col,nutrients)
         #nutrients = how much it heals
     
-    def new_obstacle(self, row, col, power=1):
+    def new_obstacle(self, col, power=1):
         """
         Will create an Obstacle object at the location (row, col)
         """
-        self.boardSquares[row][col] = Obstacle(self, col, power)
+        self.boardSquares[0][col] = Obstacle(self, col, power)
+        return Obstacle(self,col,power)
         #power = how much damage it deals
         
     def remove_object(self, row, col):
@@ -256,9 +276,9 @@ class Board(object):
             self.boardSquares.append(col)
         
         #Adding the self.items list into the boardSquares array
-        for j in self.items:
-            location = j.get_location()
-            self.boardSquares[location[0]][location[1]] = j
+        for k in self.items:
+            location = k.get_location()
+            self.boardSquares[location[0]][location[1]] = k
         
     def is_valid(self, section_of_grid):
         """
@@ -362,17 +382,17 @@ class Item(pygame.sprite.Sprite):
         pass
 
 class Obstacle(Item):
-    def __init__(self, col, power):
-        super(Obstacle, self).__init__(col)
+    def __init__(self, board, col, power):
+        super(Obstacle, self).__init__(board, col)
         self.power = power
         self.image = pygame.image.load("obstacle.png").convert_alpha()
         self.potency = power * -1
 
-
 class Food (pygame.sprite.Sprite):
     def __init__ (self, board, col, nutrients):
-        super(Obstacle, self).__init__(col)
+        super(Food, self).__init__(board, col)
         self.image = pygame.image.load("strawberry.png").convert_alpha()
+        self.rect=self.image.get_rect()
         self.potency = nutrients
         
     def effect(self):
