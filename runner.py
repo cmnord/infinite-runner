@@ -92,8 +92,8 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
     board.squares.draw(screen) # draw Sprites (Squares)
     draw_grid(screen)
     board.thePlayer.draw(screen) # draw player Sprite
-    pygame.display.flip() # update screen
     board.theItems.draw(screen)
+    pygame.display.flip() # update screen
 
    
     #how to quit the game
@@ -128,12 +128,12 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                         pause = True
         
         if stop == False and pause == False: 
-            print random_number
+            #print random_number
             board.squares.draw(screen) # draw Sprites (Squares)
-            # draw the grid herer
+            # draw the grid here
             draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
-        
+            board.theItems.draw(screen)
             update_text(screen, "Total meters traveled: " + str(moveCount))
             pygame.display.flip() # update screen
             clock.tick(10)
@@ -207,8 +207,7 @@ class Board(object):
             self.boardSquares.append(col)
             
         #---Initialize the Player---#
-        #has to be minus 1 because self.rows is the total number of rows, not the zero-indexed coordinate
-        self.player = Player(self,1,self.rows-1)
+        self.player = Player(self,1) #board, col=1, row=bottom row (default value)
 
         #---Adds Player to the "thePlayer" Sprite List---#
         self.thePlayer = pygame.sprite.RenderPlain()
@@ -231,10 +230,10 @@ class Board(object):
     
     def new_food(self, col, nutrients=1):
         """
-        Will create a Food object at the location (row, col)
+        Will create a Food object at the location (row=0, col)
         """
         self.boardSquares[0][col] = Food(self,col, nutrients)
-        return Food(self,col,nutrients)
+        return self.boardSquares[0][col]
         #nutrients = how much it heals
     
     def new_obstacle(self, col, power=1):
@@ -242,7 +241,7 @@ class Board(object):
         Will create an Obstacle object at the location (row, col)
         """
         self.boardSquares[0][col] = Obstacle(self, col, power)
-        return Obstacle(self,col,power)
+        return self.boardSquares[0][col]
         #power = how much damage it deals
         
     def remove_object(self, row, col):
@@ -287,7 +286,7 @@ class Board(object):
         pass
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, board, col, row):
+    def __init__(self, board, col, row=NUM_ROWS-1):
         pygame.sprite.Sprite.__init__(self)
         self.col = col
         self.row = row
@@ -346,9 +345,9 @@ class Player(pygame.sprite.Sprite):
         		self.modify_health(item.get_potency()) #Modify player health
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, board, col):
+    def __init__(self, board, col, row=0):
         pygame.sprite.Sprite.__init__(self)
-        self.row = 0
+        self.row = row
         self.col = col
         self.rect = self.image.get_rect()
         self.board = board
@@ -377,10 +376,6 @@ class Item(pygame.sprite.Sprite):
     
     def remove_item(self):
         pass
-        
-    def get_index(self):
-        #returns the coordinates of the item in a list, e.g. [0, 1]
-        pass
 
 class Obstacle(Item):
     def __init__(self, board, col, power):
@@ -393,7 +388,6 @@ class Food (Item):
     def __init__ (self, board, col, nutrients):
         self.image = pygame.image.load("strawberry.png").convert_alpha()
         super(Food, self).__init__(board, col)
-        self.rect=self.image.get_rect()
         self.potency = nutrients
         
     def effect(self):
