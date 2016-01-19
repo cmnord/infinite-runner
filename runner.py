@@ -211,17 +211,19 @@ class Board(object):
         
         pass
     
-    def new_food(self, row, col):
+    def new_food(self, row, col, nutrients=1):
         """
         Will create a Food object at the location (row, col)
         """
-        pass
+        self.boardSquares[row][col] = Food(self, col, nutrients)
+        #nutrients = how much it heals
     
-    def new_obstacle(self, row, col):
+    def new_obstacle(self, row, col, power=1):
         """
         Will create an Obstacle object at the location (row, col)
         """
-        pass
+        self.boardSquares[row][col] = Obstacle(self, col, power)
+        #power = how much damage it deals
         
     def remove_object(self, row, col):
         """
@@ -314,14 +316,14 @@ class Player(pygame.sprite.Sprite):
 
     def modify_health(self,potency): #get the potency from the check_potency method
         #Increase/decrease the health of the Player by the amount of potency of the object it collides with
-        self.health += item.potency
+        self.health += potency
 
     def check_potency (self,objs): #objs is a list
         #receives object in the list of the objects at the bottom row
         #We only care about the square that the player is on.  So get player location.  If there's an object there that's a Food or Obstacle, then get potency of item and modify health.
         	item = objs[self.col]
         	if isinstance(item,Food) or isinstance(item,Obstacle): #Objs is a list being passed to us.  If nothing there, it's just a Square.
-        		modify_health(item.get_potency()) #Modify player health
+        		self.modify_health(item.get_potency()) #Modify player health
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col):
