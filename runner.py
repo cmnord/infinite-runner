@@ -326,15 +326,10 @@ class Board(object):
                     new_row.append(self.new_food(i))
                 else: #prob of neither (blank square)
                     continue
-<<<<<<< Updated upstream
-            for item in new_row: #filling the boardSquares array with the newly cerated row
+            for item in new_row: #filling the boardSquares array with the newly created row
                 self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
-            plausible = self.path_search(new_row) # changes plausible to true to exit loop only if a path is possible with new row 
-=======
-                plausible=path_search() # changes plausible to true to exit loop only if a path is possible with new row 
->>>>>>> Stashed changes
-            #print len(new_row), "items in first row"
-        return new_row
+            
+            plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row 
     
     def is_valid(self, section_of_grid):
         """
@@ -342,18 +337,15 @@ class Board(object):
         """
         pass
 
-    def get_neighbors(location):
+    def get_neighbors(self, location):
         """
         From the complete boardSquares 2D array and a location (a list), this method will return a list of the coordinates in front of and to the left and right sides of the location if any only if they are not obstacles.
         """
         row = location[0]
         col = location[1]
         neighbors = []
-        if row>0: #check if you can actually go up (not in top row)
-            front = self.boardSquares[row-1, col]
-            if not isinstance(front, Obstacle): #check if front is clear
-                neighbors.append(front)
-        
+        print location
+
         if col>0: #check if you can actually go left (not in leftmost column)
             left = self.boardSquares[row, col-1]
             if not isinstance(left, Obstacle): #check if left is clear
@@ -364,21 +356,32 @@ class Board(object):
             if not isinstance(right, Obstacle): #check if right is clear
                 neighbors.append(right)
         
+        if row>0: #check if you can actually go up (not in top row)
+            front = self.boardSquares[row-1, col]
+            if not isinstance(front, Obstacle): #check if front is clear
+                neighbors.append(front)
+        
         return neighbors       
 
-    def path_search(location):
+    def path_search(self, location):
         """
         Return true if there is a path that can be made from the player's current location to the top of the board.  Returns false if there is no path.
         Uses recursive depth-first search (DFS).
         There's no default argument taken, so the first time you call if you have to pass in self.player.get_location()
-        NOT DONE YET!
         """
-        row = location[0]
-        col = location[1]
-        possible_locations = current_location.get_neighbors()
-        if len(possible_locations) == 0: #end case
+        print "Searching for a path!"
+        neighbors = self.get_neighbors(location)
+        print "neighbors are" , neighbors
+        if len(neighbors) == 0: #end case
             return False
-        
+        for item in neighbors:
+            if item[0] == 0: #if it's in the top row
+                return True # you made it! end case
+        else:
+            print "recursion"
+            neighbors.extend(self.get_neighbors(neighbors[0]))
+            del neighbors[0]
+            return path_search(neighbors[len(neighbors)-1])
         
 
 class Player(pygame.sprite.Sprite):
