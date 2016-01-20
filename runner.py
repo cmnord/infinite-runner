@@ -286,6 +286,7 @@ class Board(object):
         
         #Filling in the now-vacant first row
         for fr_item in self.generate_new_row():
+            if not isinstance(fr_item, Square):
                self.items.append(fr_item)
                self.theItems.add(fr_item)
                #adds to items list and sprite group
@@ -325,12 +326,13 @@ class Board(object):
                 elif rand_num <= probability_list[0]+probability_list[1]: #prob of food
                     new_row.append(self.new_food(i))
                 else: #prob of neither (blank square)
-                    continue
+                    new_row.append(Square(0, i, white))
             for item in new_row: #filling the boardSquares array with the newly created row
                 self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
             
             plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row 
-    
+        return new_row
+            
     def is_valid(self, section_of_grid):
         """
         Check if a section of grid is passable
@@ -346,20 +348,20 @@ class Board(object):
         neighbors = []
         print location
 
+        if row>0: #check if you can actually go up (not in top row)
+            front = self.boardSquares[row-1][col]
+            if not isinstance(front, Obstacle): #check if front is clear
+                neighbors.append(front)
+                
         if col>0: #check if you can actually go left (not in leftmost column)
-            left = self.boardSquares[row, col-1]
+            left = self.boardSquares[row][col-1]
             if not isinstance(left, Obstacle): #check if left is clear
                 neighbors.append(left)
 
         if col<3: #check if you can actually go right (not in rightmost column)
-            right = self.boardSquares[row, col+1]
+            right = self.boardSquares[row][col+1]
             if not isinstance(right, Obstacle): #check if right is clear
                 neighbors.append(right)
-        
-        if row>0: #check if you can actually go up (not in top row)
-            front = self.boardSquares[row-1, col]
-            if not isinstance(front, Obstacle): #check if front is clear
-                neighbors.append(front)
         
         return neighbors       
 
@@ -375,14 +377,13 @@ class Board(object):
         if len(neighbors) == 0: #end case
             return False
         for item in neighbors:
-            if item[0] == 0: #if it's in the top row
+            if item.get_location()[0] == 0: #if it's in the top row
                 return True # you made it! end case
-        else:
-            print "recursion"
-            neighbors.extend(self.get_neighbors(neighbors[0]))
-            del neighbors[0]
-            return path_search(neighbors[len(neighbors)-1])
-        
+            else:
+                print "recursion"
+                #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
+                #del neighbors[0]
+                return self.path_search(item.get_location())
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
