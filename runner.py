@@ -239,8 +239,9 @@ class Board(object):
         Will create a Food object at the location (row=0, col)
         """
         self.boardSquares[0][col] = Food(self,col, nutrients)
-        self.items.append(self.boardSquares[0][col])
-        self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
+        #self.items.append(self.boardSquares[0][col])
+        #self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
+        # ITEM WILL BE ADDED TO THE LISTS IN THE UPDATE_BOARD METHOD
         return self.boardSquares[0][col]
         #nutrients = how much it heals
     
@@ -249,8 +250,9 @@ class Board(object):
         Will create an Obstacle object at the location (row, col)
         """
         self.boardSquares[0][col] = Obstacle(self, col, power)
-        self.items.append(self.boardSquares[0][col])
-        self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
+        #self.items.append(self.boardSquares[0][col])
+        #self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
+        # ITEM WILL BE ADDED TO THE LISTS IN THE UPDATE_BOARD METHOD
         return self.boardSquares[0][col]
         #power = how much damage it deals
         
@@ -277,9 +279,11 @@ class Board(object):
         #Now everything has been moved down, leaving first row empty
         
         #Filling in the now-vacant first row
-        self.generate_new_row() 
+        for fr_item in self.generate_new_row():
+               self.items.append(fr_item)
+               self.theItems.add(fr_item)
+               #adds to items list and sprite group
         #gen_new_row takes a probability list as an optional argument
-        #when initializing new items, automatically adds to items list and sprite group
         
         #Refilling the squares ----
         self.squares = pygame.sprite.RenderPlain()
@@ -315,7 +319,7 @@ class Board(object):
             else: #prob of neither (blank square)
                 continue
         #print len(new_row), "items in first row"
-        #return new_row
+        return new_row
     
     def is_valid(self, section_of_grid):
         """
