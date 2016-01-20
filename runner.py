@@ -186,6 +186,12 @@ class Square(pygame.sprite.Sprite):
         """
         return self.rect
 
+    def get_location(self):
+        """
+        Returns the location of the Square
+        """
+        return [self.row, self.col]
+
     def flip_color(self):
         """
         Flips the color of the square (white -> black or 
@@ -224,7 +230,7 @@ class Board(object):
         #---Adds Player to the "thePlayer" Sprite List---#
         self.thePlayer = pygame.sprite.RenderPlain()
         self.thePlayer.add(self.player)
-
+        
         self.theItems = pygame.sprite.RenderPlain()
         #Sprite group for items
     
@@ -320,9 +326,13 @@ class Board(object):
                     new_row.append(self.new_food(i))
                 else: #prob of neither (blank square)
                     continue
+<<<<<<< Updated upstream
             for item in new_row: #filling the boardSquares array with the newly cerated row
                 self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
             plausible = self.path_search(new_row) # changes plausible to true to exit loop only if a path is possible with new row 
+=======
+                plausible=path_search() # changes plausible to true to exit loop only if a path is possible with new row 
+>>>>>>> Stashed changes
             #print len(new_row), "items in first row"
         return new_row
     
@@ -332,11 +342,44 @@ class Board(object):
         """
         pass
 
-    def get_neighbors(self, loc):
-        pass
+    def get_neighbors(location):
+        """
+        From the complete boardSquares 2D array and a location (a list), this method will return a list of the coordinates in front of and to the left and right sides of the location if any only if they are not obstacles.
+        """
+        row = location[0]
+        col = location[1]
+        neighbors = []
+        if row>0: #check if you can actually go up (not in top row)
+            front = self.boardSquares[row-1, col]
+            if not isinstance(front, Obstacle): #check if front is clear
+                neighbors.append(front)
+        
+        if col>0: #check if you can actually go left (not in leftmost column)
+            left = self.boardSquares[row, col-1]
+            if not isinstance(left, Obstacle): #check if left is clear
+                neighbors.append(left)
 
-    def path_search(self, row):
-        pass
+        if col<3: #check if you can actually go right (not in rightmost column)
+            right = self.boardSquares[row, col+1]
+            if not isinstance(right, Obstacle): #check if right is clear
+                neighbors.append(right)
+        
+        return neighbors       
+
+    def path_search(location):
+        """
+        Return true if there is a path that can be made from the player's current location to the top of the board.  Returns false if there is no path.
+        Uses recursive depth-first search (DFS).
+        There's no default argument taken, so the first time you call if you have to pass in self.player.get_location()
+        NOT DONE YET!
+        """
+        row = location[0]
+        col = location[1]
+        possible_locations = current_location.get_neighbors()
+        if len(possible_locations) == 0: #end case
+            return False
+        
+        
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
@@ -413,7 +456,7 @@ class Item(pygame.sprite.Sprite):
 
     def get_location(self):
     	#note: using this for modify_health method in Player class
-        return list([self.row, self.col]) #returns the coordinates of the item in a list, e.g. [0, 1]
+        return [self.row, self.col] #returns the coordinates of the item in a list, e.g. [0, 1]
 
     def get_potency(self): #returns the item potency for the modify_health method in Player class
     	return self.potency 
