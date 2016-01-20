@@ -109,9 +109,6 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
         again = raw_input("Would you like to play again? If yes, type 'yes'\n")
         if again == 'yes':
             new_game()
-    
-    food_random_number = int(random.uniform(150,300)) #food is more rare than obstacles
-    obstacle_random_number = int(random.uniform(30,70))
 
     while stop == False:        
         for event in pygame.event.get():
@@ -147,48 +144,11 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
-
-
-            #make a random food in a random location every 150-300 clock ticks
-            #possible issue if food and obstacle appear in same column: in this case, just create an obstacle, no food
-#            def add_food():
-#            	board.theItems.add(added_food) #adds new food to item Sprites list 
-#                board.theItems.draw(screen) # draw all item Sprites
-#                pygame.display.flip()
-#                food_random_number = int(random.uniform(150,300))
-#                print 'food'
-#
-#            def add_obstacle():
-#            	board.theItems.add(added_obstacle) #adds new obstacle to item Sprites list
-#            	board.theItems.draw(screen)
-#            	pygame.display.flip()
-#            	obstacle_random_number = int(random.uniform(30,70))
-#            	print 'obstacle'
-#
-#        	#Add a food when the move count is a multiple of the random number
-#            if moveCount%food_random_number==0:
-#            	init_location = int(random.uniform(0, 4))
-#            	added_food = board.new_food(init_location) #Create a food
-#            	if food_random_number == obstacle_random_number: #If food and obstacle should both be created, create an obstacle as well
-#		  added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
-#		  if added_food == added_obstacle: #If they're in the same column, add only the obstacle
-#		      board.add_obstacle()
-#		  else:	#If they're not in the same column, add both
-#		      board.add_food()
-#		      board.add_obstacle()
-#                else:	#If the obstacle number is not the same as the food number
-#                    board.add_food()
-#            #Add an obstacle when the move count is a multiple of the random number
-#            elif moveCount%obstacle_random_number==0:
-#            	added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
-#            	board.add_obstacle()
-
             
             # ------------------------
             if moveCount % 10 == 0:
                 #print "Move down!!!"
                 board.update_board() #will progress everything 1 row down
-
                 board.squares.draw(screen) # draw Sprites (Squares)
                 draw_grid(screen)
                 board.thePlayer.draw(screen) # draw player Sprite
@@ -308,18 +268,18 @@ class Board(object):
         new_items = []
         self.theItems = pygame.sprite.RenderPlain()
         for item in self.items: #items = list of obstacles and food
-            if(item.move_down(self.player)): 
+            if(item.move_down(self.player)):
                 #if move_down returns true, it has moved and stays on the board
                 new_items.append(item)
                 self.theItems.add(item)
 
         self.items = new_items
-        #Now everything has been moved down
+        #Now everything has been moved down, leaving first row empty
         
-        #fr_item stands for first row item... these variable names....
-        for fr_item in self.generate_new_row(): #gen_new_row takes a probability list as an optional argument
-            self.items.append(fr_item)
-            self.theItems.add(fr_item)
+        #Filling in the now-vacant first row
+        self.generate_new_row() 
+        #gen_new_row takes a probability list as an optional argument
+        #when initializing new items, automatically adds to items list and sprite group
         
         #Refilling the squares ----
         self.squares = pygame.sprite.RenderPlain()
@@ -336,9 +296,14 @@ class Board(object):
         #Adding the self.items list into the boardSquares array
         for k in self.items:
             location = k.get_location() #returns a list
-            self.boardSquares[location[0]][location[1]] = k            
-        
+            self.boardSquares[location[0]][location[1]] = k  
+                    
     def generate_new_row(self, probability_list=[.30,.10]):
+        """
+        Takes in a list of probabilities [% obstacle, % food] and generates
+        a row with those probabilities
+        Returns a list
+        """
         #probability_list = percent chance of getting an obstacle, food
         new_row = []
         for i in range(4):
@@ -349,7 +314,8 @@ class Board(object):
                 new_row.append(self.new_food(i))
             else: #prob of neither (blank square)
                 continue
-        return new_row
+        #print len(new_row), "items in first row"
+        #return new_row
     
     def is_valid(self, section_of_grid):
         """
@@ -451,7 +417,6 @@ class Item(pygame.sprite.Sprite):
         else:
             self.row += 1
             self.rect.y = get_row_top_loc(self.row)
-            #print "Moved down!"
             return True
     
     def remove_item(self):
