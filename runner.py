@@ -320,7 +320,9 @@ class Board(object):
                     new_row.append(self.new_food(i))
                 else: #prob of neither (blank square)
                     continue
-                plausible=path_search(new_row) # changes plausible to true to exit loop only if a path is possible with new row 
+            for item in new_row: #filling the boardSquares array with the newly cerated row
+                self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
+            plausible = self.path_search(new_row) # changes plausible to true to exit loop only if a path is possible with new row 
             #print len(new_row), "items in first row"
         return new_row
     
