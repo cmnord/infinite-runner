@@ -150,37 +150,39 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
 
             #make a random food in a random location every 150-300 clock ticks
             #possible issue if food and obstacle appear in same column: in this case, just create an obstacle, no food
-            def add_food():
-            	board.theItems.add(added_food) #adds new food to item Sprites list 
-                board.theItems.draw(screen) # draw all item Sprites
-                pygame.display.flip()
-                food_random_number = int(random.uniform(150,300))
-                print 'food'
+#            def add_food():
+#            	board.theItems.add(added_food) #adds new food to item Sprites list 
+#                board.theItems.draw(screen) # draw all item Sprites
+#                pygame.display.flip()
+#                food_random_number = int(random.uniform(150,300))
+#                print 'food'
+#
+#            def add_obstacle():
+#            	board.theItems.add(added_obstacle) #adds new obstacle to item Sprites list
+#            	board.theItems.draw(screen)
+#            	pygame.display.flip()
+#            	obstacle_random_number = int(random.uniform(30,70))
+#            	print 'obstacle'
+#
+#        	#Add a food when the move count is a multiple of the random number
+#            if moveCount%food_random_number==0:
+#            	init_location = int(random.uniform(0, 4))
+#            	added_food = board.new_food(init_location) #Create a food
+#            	if food_random_number == obstacle_random_number: #If food and obstacle should both be created, create an obstacle as well
+#		  added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
+#		  if added_food == added_obstacle: #If they're in the same column, add only the obstacle
+#		      board.add_obstacle()
+#		  else:	#If they're not in the same column, add both
+#		      board.add_food()
+#		      board.add_obstacle()
+#                else:	#If the obstacle number is not the same as the food number
+#                    board.add_food()
+#            #Add an obstacle when the move count is a multiple of the random number
+#            elif moveCount%obstacle_random_number==0:
+#            	added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
+#            	board.add_obstacle()
 
-            def add_obstacle():
-            	board.theItems.add(added_obstacle) #adds new obstacle to item Sprites list
-            	board.theItems.draw(screen)
-            	pygame.display.flip()
-            	obstacle_random_number = int(random.uniform(30,70))
-            	print 'obstacle'
-
-        	#Add a food when the move count is a multiple of the random number
-            if moveCount%food_random_number==0:
-            	added_food = board.new_food(int(random.uniform(0, 4))) #Create a food
-            	if food_random_number == obstacle_random_number: #If food and obstacle should both be created, create an obstacle as well
-					added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
-					if added_food == added_obstacle: #If they're in the same column, add only the obstacle
-						add_obstacle()
-					else:	#If they're not in the same column, add both
-						add_food()
-						add_obstacle()
-            	else:	#If the obstacle number is not the same as the food number
-                	add_food()
-            #Add an obstacle when the move count is a multiple of the random number
-            elif moveCount%obstacle_random_number==0:
-            	added_obstacle = board.new_obstacle(int(random.uniform(0,4)))
-            	add_obstacle()
-
+            
             # ------------------------
             if moveCount % 10 == 0:
                 #print "Move down!!!"
@@ -267,6 +269,7 @@ class Board(object):
         """
         self.boardSquares[0][col] = Food(self,col, nutrients)
         self.items.append(self.boardSquares[0][col])
+        self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
         return self.boardSquares[0][col]
         #nutrients = how much it heals
     
@@ -276,6 +279,7 @@ class Board(object):
         """
         self.boardSquares[0][col] = Obstacle(self, col, power)
         self.items.append(self.boardSquares[0][col])
+        self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
         return self.boardSquares[0][col]
         #power = how much damage it deals
         
@@ -299,6 +303,12 @@ class Board(object):
                 self.theItems.add(item)
 
         self.items = new_items
+        #Now everything has been moved down
+        
+        #fr_item stands for first row item... these variable names....
+        for fr_item in self.generate_new_row(): #gen_new_row takes a probability list as an optional argument
+            self.items.append(fr_item)
+            self.theItems.add(fr_item)
         
         #Refilling the squares ----
         self.squares = pygame.sprite.RenderPlain()
@@ -317,6 +327,19 @@ class Board(object):
             location = k.get_location() #returns a list
             self.boardSquares[location[0]][location[1]] = k            
         
+    def generate_new_row(self, probability_list=[.30,.10]):
+        #probability_list = percent chance of getting an obstacle, food
+        new_row = []
+        for i in range(4):
+            rand_num = random.random()
+            if rand_num <= probability_list[0]: #probability of obstacle
+                new_row.append(self.new_obstacle(i))
+            elif rand_num <= probability_list[0]+probability_list[1]: #prob of food
+                new_row.append(self.new_food(i))
+            else: #prob of neither (blank square)
+                continue
+        return new_row
+    
     def is_valid(self, section_of_grid):
         """
         Check if a section of grid is passable
@@ -328,7 +351,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.col = col
         self.row = row
-        self.image = pygame.image.load("ant.png").convert_alpha()
+        self.image = pygame.image.load("player.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
@@ -425,7 +448,7 @@ class Item(pygame.sprite.Sprite):
 
 class Obstacle(Item):
     def __init__(self, board, col, power):
-        self.image = pygame.image.load("obstacle.png").convert_alpha()
+        self.image = pygame.image.load("tourist.png").convert_alpha()
         super(Obstacle, self).__init__(board, col)
         self.power = power
         self.potency = power * -1
