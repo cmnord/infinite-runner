@@ -11,6 +11,7 @@ Completed by:
 import pygame, sys
 import random
 from example_menu import main as menu
+from losers_menu import main as losers_menu
 
 ### Global Variables
 WIDTH = 75  # this is the width of an individual square
@@ -135,7 +136,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                     else:
                         pause = True
         
-        if stop == False and pause == False: 
+        if stop == False and pause == False and board.player.health>0: 
             #print random_number
             board.squares.draw(screen) # draw Sprites (Squares)
             # draw the grid here
@@ -194,6 +195,16 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 board.theItems.draw(screen)
                 pygame.display.flip()
 
+        if board.player.health<=0:
+            result = losers_menu(screen)
+            pygame.display.flip()
+            if result == 0: #THIS MEANS USER SELECTED YOU LOSE
+                print ":("
+            elif result == 1: #USER SELECTED NEW GAME
+                board.player.modify_health(10)
+                main_loop(screen, board, moveCount, clock, False, False)
+            elif result == 2: #USER SELETED OPTIONS
+                print "you have no options -- yet!"       
     pygame.quit() # closes things, keeps idle from freezing
 
 class Square(pygame.sprite.Sprite):
