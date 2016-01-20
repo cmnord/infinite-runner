@@ -308,17 +308,20 @@ class Board(object):
         a row with those probabilities
         Returns a list
         """
+        plausible=False
         #probability_list = percent chance of getting an obstacle, food
-        new_row = []
-        for i in range(4):
-            rand_num = random.random()
-            if rand_num <= probability_list[0]: #probability of obstacle
-                new_row.append(self.new_obstacle(i))
-            elif rand_num <= probability_list[0]+probability_list[1]: #prob of food
-                new_row.append(self.new_food(i))
-            else: #prob of neither (blank square)
-                continue
-        #print len(new_row), "items in first row"
+        while plausible==false: # generates a new row as long as there as is not a plausible row
+            new_row = []
+            for i in range(4):
+                rand_num = random.random()
+                if rand_num <= probability_list[0]: #probability of obstacle
+                    new_row.append(self.new_obstacle(i))
+                elif rand_num <= probability_list[0]+probability_list[1]: #prob of food
+                    new_row.append(self.new_food(i))
+                else: #prob of neither (blank square)
+                    continue
+                plausible=path_search(new_row) # changes plausible to true to exit loop only if a path is possible with new row 
+            #print len(new_row), "items in first row"
         return new_row
     
     def is_valid(self, section_of_grid):
@@ -389,6 +392,12 @@ class Player(pygame.sprite.Sprite):
                             self.modify_health(item.get_potency()) #Modify player health
     """
 
+    def get_neighbors(self, loc):
+        pass
+
+    def path_search(self, row):
+        pass
+        
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col, row=0):
         pygame.sprite.Sprite.__init__(self)
