@@ -310,7 +310,7 @@ class Board(object):
         """
         plausible=False
         #probability_list = percent chance of getting an obstacle, food
-        while plausible==false: # generates a new row as long as there as is not a plausible row
+        while plausible==False: # generates a new row as long as there as is not a plausible row
             new_row = []
             for i in range(4):
                 rand_num = random.random()
@@ -328,6 +328,12 @@ class Board(object):
         """
         Check if a section of grid is passable
         """
+        pass
+
+    def get_neighbors(self, loc):
+        pass
+
+    def path_search(self, row):
         pass
 
 class Player(pygame.sprite.Sprite):
@@ -392,12 +398,6 @@ class Player(pygame.sprite.Sprite):
                             self.modify_health(item.get_potency()) #Modify player health
     """
 
-    def get_neighbors(self, loc):
-        pass
-
-    def path_search(self, row):
-        pass
-        
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col, row=0):
         pygame.sprite.Sprite.__init__(self)
