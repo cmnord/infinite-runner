@@ -110,7 +110,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             new_game()
     
     food_random_number = int(random.uniform(150,300)) #food is more rare than obstacles
-    obstacle_random_number = int(random.uniform(30,70)
+    obstacle_random_number = int(random.uniform(30,70))
 
     while stop == False:        
         for event in pygame.event.get():
@@ -142,7 +142,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
             board.theItems.draw(screen)
-            update_text(screen, "Total meters traveled: " + str(moveCount))
+            update_text(screen, "Total meters traveled: " + str(moveCount) +"H: " + str(board.player.health))
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
@@ -374,13 +374,16 @@ class Player(pygame.sprite.Sprite):
     def modify_health(self,potency): #get the potency from the check_potency method
         #Increase/decrease the health of the Player by the amount of potency of the object it collides with
         self.health += potency
+        print 'health', self.health 
 
+    """
     def check_potency (self,objs): #objs is a list
-        #receives object in the list of the objects at the bottom row
-        #We only care about the square that the player is on.  So get player location.  If there's an object there that's a Food or Obstacle, then get potency of item and modify health.
-        	item = objs[self.col]
-        	if isinstance(item,Food) or isinstance(item,Obstacle): #Objs is a list being passed to us.  If nothing there, it's just a Square.
-        		self.modify_health(item.get_potency()) #Modify player health
+                    #receives object in the list of the objects at the bottom row
+                    #We only care about the square that the player is on.  So get player location.  If there's an object there that's a Food or Obstacle, then get potency of item and modify health.
+                        item = objs[self.col]
+                        if isinstance(item,Food) or isinstance(item,Obstacle): #Objs is a list being passed to us.  If nothing there, it's just a Square.
+                            self.modify_health(item.get_potency()) #Modify player health
+    """
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col, row=0):
@@ -402,14 +405,14 @@ class Item(pygame.sprite.Sprite):
 
     def move_down(self, player):
         #print "Got to the move_down function!"
+        if self.get_location() == player.get_location():
+            player.modify_health(self.potency)
+            self.remove_item() 
+            #print "Collision!"
+            return False
         if self.get_location()[0] >= NUM_ROWS-1: #if in row 7, remove
             self.remove_item()
             #print "Out of bounds!"
-            return False
-        elif self.get_location() == player.get_location():
-            player.modify_health(self.potency)
-            self.remove_item()
-            #print "Collision!"
             return False
         else:
             self.row += 1
