@@ -146,7 +146,6 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                         pause = True
         
         if stop == False and pause == False and board.player.health>0: 
-            #print random_number
             board.squares.draw(screen) # draw Sprites (Squares)
             # draw the grid here
             draw_grid(screen)
@@ -157,9 +156,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             clock.tick(10)
             moveCount += 1
             
-            # ------------------------
-            if moveCount % 10 == 0:
-                #print "Move down!!!"
+            if moveCount % 5 == 0: #actually moving things down
                 board.update_board() #will progress everything 1 row down
                 board.squares.draw(screen) # draw Sprites (Squares)
                 draw_grid(screen)
@@ -247,19 +244,11 @@ class Board(object):
         self.theItems = pygame.sprite.RenderPlain()
         #Sprite group for items
     
-    def move_down(self):
-        """
-        Probably unneeded now; everything is in move_down in item class
-        """
-        pass
-    
     def new_food(self, col, nutrients=1):
         """
         Will create a Food object at the location (row=0, col)
         """
         self.boardSquares[0][col] = Food(self,col, nutrients)
-        #self.items.append(self.boardSquares[0][col])
-        #self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
         # ITEM WILL BE ADDED TO THE LISTS IN THE UPDATE_BOARD METHOD
         return self.boardSquares[0][col]
         #nutrients = how much it heals
@@ -269,19 +258,10 @@ class Board(object):
         Will create an Obstacle object at the location (row, col)
         """
         self.boardSquares[0][col] = Obstacle(self, col, power)
-        #self.items.append(self.boardSquares[0][col])
-        #self.theItems.add(self.boardSquares[0][col]) #adds to sprite group
         # ITEM WILL BE ADDED TO THE LISTS IN THE UPDATE_BOARD METHOD
         return self.boardSquares[0][col]
         #power = how much damage it deals
-        
-    def remove_object(self, row, col):
-        """
-        Will remove the object at the location (row, col)
-        "Remove" = replace with a white Square object
-        """
-        pass
-        
+            
     def update_board(self):
         """
         Will call move_down on every square in the grid
@@ -364,13 +344,6 @@ class Board(object):
             plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row
             print "plausible?", plausible 
         return new_row
-
-            
-    def is_valid(self, section_of_grid):
-        """
-        Check if a section of grid is passable
-        """
-        pass
 
     def get_neighbors(self, location):
         """
@@ -512,34 +485,26 @@ class Item(pygame.sprite.Sprite):
     	return self.potency 
 
     def move_down(self, player):
-        #print "Got to the move_down function!"
         if self.get_location() == player.get_location():
             player.modify_health(self.potency)
-            self.remove_item() 
-            #print "Collision!"
-            return False
+            return False #rather than actually removing the item, it just won't be drawn in the update method
         if self.get_location()[0] >= NUM_ROWS-1: #if in row 7, remove
-            self.remove_item()
-            #print "Out of bounds!"
-            return False
+            return False #rather than actually removing the item, it just won't be drawn in the update method
         else:
             self.row += 1
             self.rect.y = get_row_top_loc(self.row)
             return True
     
-    def remove_item(self):
-        pass
-
 class Obstacle(Item):
     def __init__(self, board, col, power):
-        self.image = pygame.image.load("tourist.png").convert_alpha()
+        self.image = pygame.image.load("tourist" + str(random.randint(1,2)) + ".png").convert_alpha()
         super(Obstacle, self).__init__(board, col)
         self.power = power
         self.potency = power * -1
 
 class Food (Item):
     def __init__ (self, board, col, nutrients):
-        self.image = pygame.image.load("strawberry.png").convert_alpha()
+        self.image = pygame.image.load("food" + str(random.randint(1,7)) + ".png").convert_alpha()
         super(Food, self).__init__(board, col)
         self.potency = nutrients
         
