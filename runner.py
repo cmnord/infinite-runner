@@ -226,6 +226,7 @@ class Board(object):
         #---Initializes Squares (the "Board")---#
         self.squares = pygame.sprite.RenderPlain()
         self.boardSquares = []
+        self.checkedLocations=[] # this is used for the path search to store the coordinates that have already been checked
         
         #---Populate boardSquares with Squares---#
         for i in range(self.rows): #rows in 2d array
@@ -355,6 +356,7 @@ class Board(object):
         """
         From the complete boardSquares 2D array and a location (a list), this method will return a list of the coordinates in front of and to the left and right sides of the location if any only if they are not obstacles.
         """
+
         row = location[0]
         col = location[1]
         neighbors = []
@@ -362,20 +364,25 @@ class Board(object):
 
         if row>0: #check if you can actually go up (not in top row)
             front = self.boardSquares[row-1][col]
-            if not isinstance(front, Obstacle): #check if front is clear
+            if not isinstance(front, Obstacle)  and not (front.get_location() in self.checkedLocations): #check if front is clear
                 neighbors.append(front)
                 
         if col>0: #check if you can actually go left (not in leftmost column)
             left = self.boardSquares[row][col-1]
-            if not isinstance(left, Obstacle): #check if left is clear
+            if not isinstance(left, Obstacle) and not (left.get_location() in self.checkedLocations): #check if left is clear
                 neighbors.append(left)
 
         if col<3: #check if you can actually go right (not in rightmost column)
             right = self.boardSquares[row][col+1]
-            if not isinstance(right, Obstacle): #check if right is clear
+            if not isinstance(right, Obstacle)  and not (right.get_location() in self.checkedLocations): #check if right is clear
                 neighbors.append(right)
         
-        return neighbors       
+        #adds checked items to a list to avoid double checking same location
+        for item in neighbors:
+            checkedLocations.append(item.get_location())
+
+        return neighbors
+
 
     def path_search(self, location):
         """
