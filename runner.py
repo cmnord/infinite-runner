@@ -317,7 +317,7 @@ class Board(object):
             location = k.get_location() #returns a list
             self.boardSquares[location[0]][location[1]] = k  
                     
-    def generate_new_row(self, probability_list=[.30,.10]):
+    def generate_new_row(self, probability_list=[.30,.05]):
         """
         Takes in a list of probabilities [% obstacle, % food] and generates
         a row with those probabilities
@@ -409,7 +409,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.col = col
         self.row = row
-        self.image = pygame.image.load("player.png").convert_alpha()
+        self.image = pygame.image.load("img/player.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
@@ -497,14 +497,14 @@ class Item(pygame.sprite.Sprite):
     
 class Obstacle(Item):
     def __init__(self, board, col, power):
-        self.image = pygame.image.load("tourist" + str(random.randint(1,2)) + ".png").convert_alpha()
+        self.image = pygame.image.load("img/tourist" + str(random.randint(1,2)) + ".png").convert_alpha()
         super(Obstacle, self).__init__(board, col)
         self.power = power
         self.potency = power * -1
 
 class Food (Item):
     def __init__ (self, board, col, nutrients):
-        self.image = pygame.image.load("food" + str(random.randint(1,7)) + ".png").convert_alpha()
+        self.image = pygame.image.load("img/food" + str(random.randint(1,7)) + ".png").convert_alpha()
         super(Food, self).__init__(board, col)
         self.potency = nutrients
         
