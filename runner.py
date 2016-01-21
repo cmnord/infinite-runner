@@ -295,6 +295,21 @@ class Board(object):
                 self.theItems.add(item)
 
         self.items = new_items
+        
+        #Updating the boardSquares array
+        self.boardSquares = []
+        
+        for i in range(self.rows): #rows in 2d array
+            col = []
+            for j in range(self.cols): #cols #j=col, i=row
+                s = Square(i,j,white)
+                col.append(s)
+            self.boardSquares.append(col)
+        
+        #Adding the self.items list into the boardSquares array
+        for k in self.items:
+            location = k.get_location() #returns a list
+            self.boardSquares[location[0]][location[1]] = k
         #Now everything has been moved down, leaving first row empty
         
         #Filling in the now-vacant first row
@@ -345,6 +360,7 @@ class Board(object):
             for item in new_row: #filling the boardSquares array with the newly created row
                 self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
             
+            self.checkedLocations = []
             plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row
             print "plausible?", plausible 
         return new_row
@@ -411,7 +427,9 @@ class Board(object):
                 #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
                 #del neighbors[0]
                 if not (item.get_location() in self.checkedLocations):
-                    return self.path_search(item.get_location())
+                    if self.path_search(item.get_location()):
+                        return True
+        return False
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
