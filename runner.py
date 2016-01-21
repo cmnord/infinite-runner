@@ -170,7 +170,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             if result == 0: #THIS MEANS USER SELECTED YOU LOSE
                 print ":("
             elif result == 1: #USER SELECTED NEW GAME
-                board.player.modify_health(10)
+                board = Board()
                 main_loop(screen, board, moveCount, clock, False, False)
             elif result == 2: #USER SELETED OPTIONS
                 print "you have no options -- yet!"       
@@ -323,10 +323,27 @@ class Board(object):
         a row with those probabilities
         Returns a list
         """
-        print "+++++++++++++++++++++++++++NEW ROW GENERATION TIME++++++++++++++++++++++++++++++++++++++"
         self.checkedLocations=[]
         plausible=False
         #probability_list = percent chance of getting an obstacle, food
+        
+        #did the user get themselves stuck? if creating a blank row allows no possible paths, then yes
+        new_row = [Square(0,c,white) for c in range(4)] #row of squares only ("blank")
+        for item in new_row: #updating boardSquares
+            self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
+        if not self.path_search(self.player.get_location()): #if no possible paths
+            new_row = []
+            for i in range(4):
+                rand_num = random.random()
+                if rand_num <= probability_list[0]: #probability of obstacle
+                    new_row.append(self.new_obstacle(i))
+                elif rand_num <= probability_list[0]+probability_list[1]: #prob of food
+                    new_row.append(self.new_food(i))
+                else: #prob of neither (blank square)
+                    new_row.append(Square(0, i, white))
+            plausible = True
+        
+        #if the player is not an idiot:
         while plausible==False: # generates a new row as long as there as is not a plausible row
             new_row = []
             for i in range(4):
@@ -342,7 +359,6 @@ class Board(object):
             
             self.checkedLocations = []
             plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row
-            print "plausible?", plausible 
         return new_row
 
     def get_neighbors(self, location):
@@ -353,8 +369,6 @@ class Board(object):
         row = location[0]
         col = location[1]
         neighbors = []
-        print location
-
         if row>0: #check if you can actually go up (not in top row)
             front = self.boardSquares[row-1][col]
             if not isinstance(front, Obstacle): #check if front is clear
@@ -382,21 +396,13 @@ class Board(object):
         #adds checked items to a list to avoid double checking same location
         self.checkedLocations.append(location)
 
-        print "Searching for a path!"
         neighbors = self.get_neighbors(location)
-        print len(neighbors)
-        print "neighbors are"
-        for item in neighbors:
-            print item.get_location()
         if len(neighbors) == 0: #end case
-            print "THIS IS BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD"
             return False
         for item in neighbors:
             if item.get_location()[0] == 0: #if it's in the top row
-                print "FOUND PATH**********************************"
                 return True # you made it! end case
             else:
-                print "recursion"
                 #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
                 #del neighbors[0]
                 if not (item.get_location() in self.checkedLocations):
