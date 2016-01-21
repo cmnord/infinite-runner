@@ -411,13 +411,7 @@ class Board(object):
                 #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
                 #del neighbors[0]
                 if not (item.get_location() in self.checkedLocations):
-                    if len(neighbors) == 0: #end case
-                        print "THIS IS BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD"
-                        return False
-                    if item.get_location()[0] == 0: #if it's in the top row
-                        print "FOUND PATH**********************************"
-                        return True # you made it! end case 
-                    self.path_search(item.get_location())
+                    return self.path_search(item.get_location())
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
