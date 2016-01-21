@@ -328,6 +328,8 @@ class Board(object):
         a row with those probabilities
         Returns a list
         """
+        print "+++++++++++++++++++++++++++NEW ROW GENERATION TIME++++++++++++++++++++++++++++++++++++++"
+        self.checkedLocations=[]
         plausible=False
         #probability_list = percent chance of getting an obstacle, food
         while plausible==False: # generates a new row as long as there as is not a plausible row
@@ -343,8 +345,10 @@ class Board(object):
             for item in new_row: #filling the boardSquares array with the newly created row
                 self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
             
-            plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row 
+            plausible = self.path_search(self.player.get_location()) # changes plausible to true to exit loop only if a path is possible with new row
+            print "plausible?", plausible 
         return new_row
+
             
     def is_valid(self, section_of_grid):
         """
@@ -391,18 +395,29 @@ class Board(object):
 
         print "Searching for a path!"
         neighbors = self.get_neighbors(location)
-        print "neighbors are" , neighbors
+        print len(neighbors)
+        print "neighbors are"
+        for item in neighbors:
+            print item.get_location()
         if len(neighbors) == 0: #end case
+            print "THIS IS BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD"
             return False
         for item in neighbors:
             if item.get_location()[0] == 0: #if it's in the top row
+                print "FOUND PATH**********************************"
                 return True # you made it! end case
             else:
                 print "recursion"
                 #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
                 #del neighbors[0]
                 if not (item.get_location() in self.checkedLocations):
-                    return self.path_search(item.get_location())
+                    if len(neighbors) == 0: #end case
+                        print "THIS IS BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD"
+                        return False
+                    if item.get_location()[0] == 0: #if it's in the top row
+                        print "FOUND PATH**********************************"
+                        return True # you made it! end case 
+                    self.path_search(item.get_location())
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
