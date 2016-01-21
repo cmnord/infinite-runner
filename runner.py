@@ -364,22 +364,18 @@ class Board(object):
 
         if row>0: #check if you can actually go up (not in top row)
             front = self.boardSquares[row-1][col]
-            if not isinstance(front, Obstacle)  and not (front.get_location() in self.checkedLocations): #check if front is clear
+            if not isinstance(front, Obstacle): #check if front is clear
                 neighbors.append(front)
                 
         if col>0: #check if you can actually go left (not in leftmost column)
             left = self.boardSquares[row][col-1]
-            if not isinstance(left, Obstacle) and not (left.get_location() in self.checkedLocations): #check if left is clear
+            if not isinstance(left, Obstacle): #check if left is clear
                 neighbors.append(left)
 
         if col<3: #check if you can actually go right (not in rightmost column)
             right = self.boardSquares[row][col+1]
-            if not isinstance(right, Obstacle)  and not (right.get_location() in self.checkedLocations): #check if right is clear
+            if not isinstance(right, Obstacle): #check if right is clear
                 neighbors.append(right)
-        
-        #adds checked items to a list to avoid double checking same location
-        for item in neighbors:
-            checkedLocations.append(item.get_location())
 
         return neighbors
 
@@ -390,6 +386,9 @@ class Board(object):
         Uses recursive depth-first search (DFS).
         There's no default argument taken, so the first time you call if you have to pass in self.player.get_location()
         """
+        #adds checked items to a list to avoid double checking same location
+        self.checkedLocations.append(location)
+
         print "Searching for a path!"
         neighbors = self.get_neighbors(location)
         print "neighbors are" , neighbors
@@ -402,7 +401,8 @@ class Board(object):
                 print "recursion"
                 #neighbors.extend(self.get_neighbors(neighbors[0].get_location()))
                 #del neighbors[0]
-                return self.path_search(item.get_location())
+                if not (item.get_location() in self.checkedLocations):
+                    return self.path_search(item.get_location())
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, board, col, row=NUM_ROWS-1):
