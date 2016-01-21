@@ -41,7 +41,7 @@ def get_col_left_loc(colNum, width = WIDTH):
     """
     return colNum * width + 10
 
-def update_text(screen, message):
+def update_text(screen, message1, message2):
     """
     Used to display the text on the right-hand part of the screen.
     You don't need to code anything, but you may want to read and
@@ -49,12 +49,24 @@ def update_text(screen, message):
     """
     textSize = 20
     font = pygame.font.Font(None, 20)
-    textY = 0 + textSize
-    text = font.render(message, True, white, black)
-    textRect = text.get_rect()
-    textRect.centerx = (NUM_COLS + 1) * WIDTH + 10
-    textRect.centery = textY
-    screen.blit(text, textRect)
+
+    text2Y = 2*textSize
+    text1Y = 0 + textSize
+
+    text1 = font.render(message1, True, white, black)
+    text2 = font.render(message2, True, white, black)
+
+    text1Rect = text1.get_rect()
+    text2Rect = text2.get_rect()
+
+    text1Rect.centerx = (NUM_COLS + 1) * WIDTH + 10
+    text2Rect.centerx = (NUM_COLS + 1) * WIDTH + 10
+
+    text1Rect.centery = text1Y
+    text2Rect.centery = text2Y
+
+    screen.blit(text1, text1Rect)
+    screen.blit(text2, text2Rect)
 
 def new_game():
     """
@@ -140,7 +152,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
             board.theItems.draw(screen)
-            update_text(screen, "Total meters traveled: " + str(moveCount) +"H: " + str(board.player.health))
+            update_text(screen, "Total meters traveled: " + str(moveCount), "Health: " + str(board.player.health))
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
