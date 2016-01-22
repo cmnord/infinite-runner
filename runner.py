@@ -127,6 +127,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             if event.type == pygame.QUIT: #user clicks close
                 stop = True
                 pygame.quit()
+                sys.exit()
             #how to pause the game, move player right, and move player left
             elif event.type==pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
