@@ -213,18 +213,6 @@ class Square(pygame.sprite.Sprite):
         Returns the location of the Square
         """
         return [self.row, self.col]
-
-    def flip_color(self):
-        """
-        Flips the color of the square (white -> black or 
-        black -> white)
-        """
-        if self.color == black:
-            self.color = white
-        else:
-            self.color=black
-        
-        self.image.fill(self.color)
    
 class Board(object):
     def __init__(self):
@@ -317,7 +305,6 @@ class Board(object):
             probability_list=[.35,.005]
         if moveCount>10000:
             probability_list=[.38,.0025]
-        print probability_list
 
         #Filling in the now-vacant first row
         for fr_item in self.generate_new_row(probability_list):
@@ -360,6 +347,8 @@ class Board(object):
         for item in new_row: #updating boardSquares
             self.boardSquares[item.get_location()[0]][item.get_location()[1]] = item
         if not self.path_search(self.player.get_location()): #if no possible paths
+            #troll the user if they're an idiot w/commented line below:
+            #new_row = [self.new_obstacle(d) for d in range(4)]
             new_row = []
             for i in range(4):
                 rand_num = random.random()
@@ -449,13 +438,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
         self.health=5
-
-        
-    def get_current_square(self):
-        """
-        Returns the square that the player is currently on
-        """
-        return self.board.get_square(self.col, self.row)
    
     def get_location(self):
         """
@@ -491,7 +473,7 @@ class Player(pygame.sprite.Sprite):
         
         self.has_collided()
 
-    def modify_health(self,potency): #get the potency from the check_potency method
+    def modify_health(self,potency):
         #Increase/decrease the health of the Player by the amount of potency of the object it collides with
         self.health += potency
         
@@ -502,15 +484,6 @@ class Player(pygame.sprite.Sprite):
             
             #"remove" the obstacle/food and replace with a square
             self.board.boardSquares[self.row][self.col] = Square(self.row,self.col, white)
-
-    """
-    def check_potency (self,objs): #objs is a list
-                    #receives object in the list of the objects at the bottom row
-                    #We only care about the square that the player is on.  So get player location.  If there's an object there that's a Food or Obstacle, then get potency of item and modify health.
-                        item = objs[self.col]
-                        if isinstance(item,Food) or isinstance(item,Obstacle): #Objs is a list being passed to us.  If nothing there, it's just a Square.
-                            self.modify_health(item.get_potency()) #Modify player health
-    """
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, board, col, row=0):
