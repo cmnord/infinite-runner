@@ -41,7 +41,7 @@ def get_col_left_loc(colNum, width = WIDTH):
     """
     return colNum * width + 10
 
-def update_text(screen, message1, message2):
+def update_text(screen, messages):
     """
     Used to display the text on the right-hand part of the screen.
     You don't need to code anything, but you may want to read and
@@ -50,24 +50,20 @@ def update_text(screen, message1, message2):
     textSize = 20
     font = pygame.font.Font(None, 20)
 
-    text2Y = 2*textSize
-    text1Y = 0 + textSize
+    #use a rectangle to cover up old text
+    pygame.draw.rect(screen,black,[310,0,200,620],0)
 
-    text1 = font.render(message1, True, white, black)
-    text2 = font.render(message2, True, white, black)
-
-    text1Rect = text1.get_rect()
-    text2Rect = text2.get_rect()
-
-    text1Rect.centerx = (NUM_COLS + 1) * WIDTH + 10
-    text2Rect.centerx = (NUM_COLS + 1) * WIDTH + 10
-
-    text1Rect.centery = text1Y
-    text2Rect.centery = text2Y
-
-    screen.blit(text1, text1Rect)
-    screen.blit(text2, text2Rect)
-
+    #loop through each of the strings in the list to print them on the side panel
+    Y_increment=0
+    for message in messages:
+        textY=textSize+Y_increment
+        text=font.render(message, True, white, black)
+        textRect = text.get_rect()
+        textRect.centerx = (NUM_COLS + 1) * WIDTH + 30
+        textRect.centery = textY
+        screen.blit(text, textRect)
+        Y_increment+=textSize
+       
 def new_game():
     """
     Sets up all necessary components to start a new game.
@@ -97,6 +93,7 @@ def draw_grid(screen):
     """
     Draw the border grid on the screen.
     """
+    """
     #draw the vertical lines
     for i in range(NUM_COLS + 1):
         start_pos_top = get_col_left_loc(i, WIDTH)
@@ -106,7 +103,8 @@ def draw_grid(screen):
     for i in range(NUM_ROWS+1):
         start_pos_left = get_row_top_loc(i, HEIGHT)
         pygame.draw.line(screen, red, (10, start_pos_left), (NUM_COLS*WIDTH + 10, start_pos_left), 1)
-
+    """ 
+    pass
 # Main program Loop: (called by new_game)
 def main_loop(screen, board, moveCount, clock, stop, pause):
     board.squares.draw(screen) # draw Sprites (Squares)
@@ -152,7 +150,33 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
             board.theItems.draw(screen)
-            update_text(screen, "Total meters traveled: " + str(moveCount), "Health: " + str(board.player.health))
+            update_text(screen, ["Meters traveled: ",
+                str(int(moveCount/10)), 
+                "",
+                "Health: " + str(board.player.health),
+                "",
+                "",
+                "INSTRUCTIONS:",
+                "You have found free food.",
+                "Now you must navigate",
+                "through the Infinite",
+                "to bring food and glory",
+                "back to your dorm wing.",
+                "",
+                "Move your player",
+                "using left/right arrow keys.",
+                "Avoid collisions",
+                "with MIT tourists.",
+                "Such collisions will",
+                "decrease your health.",
+                "Collect more free food",
+                "to increase health.",
+                "You will infinitley continue",
+                "through the Infinite",
+                "unless you lose all health,",
+                "in which case you lose.",
+                "",
+                "Try to travel the furtherest!"])
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
@@ -461,8 +485,7 @@ class Player(pygame.sprite.Sprite):
 
     def modify_health(self,potency): #get the potency from the check_potency method
         #Increase/decrease the health of the Player by the amount of potency of the object it collides with
-        self.health += potency
-        print 'health', self.health 
+        self.health += potency 
 
     """
     def check_potency (self,objs): #objs is a list
