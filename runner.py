@@ -164,10 +164,15 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             clock.tick(10)
             moveCount += 1
 
+            #increase the speed of the game as it progresses
             modulo=5
+            if moveCount>500: 
+                modulo=4
+            if moveCount>1000:
+                modulo=3
+            if moveCount>1500:
+                modulo=2
 
-            if moveCount%50==0 and modulo<0: #increase speed of game as it progresses
-                modulo-=1
     
             if moveCount % modulo == 0: #actually moving things down
                 board.update_board(moveCount) #will progress everything 1 row down
@@ -350,6 +355,7 @@ class Board(object):
         if not self.path_search(self.player.get_location()): #if no possible paths
             #troll the user if they're an idiot w/commented line below:
             #new_row = [self.new_obstacle(d) for d in range(4)]
+            
             new_row = []
             for i in range(4):
                 rand_num = random.random()
@@ -359,6 +365,7 @@ class Board(object):
                     new_row.append(self.new_food(i))
                 else: #prob of neither (blank square)
                     new_row.append(Square(0, i, white))
+            
             plausible = True
         
         #if the player is not an idiot:
