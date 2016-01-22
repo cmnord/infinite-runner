@@ -41,11 +41,10 @@ def get_col_left_loc(colNum, width = WIDTH):
     """
     return colNum * width + 10
 
-def update_text(screen, messages):
+def update_text(screen, messages): 
     """
     Used to display the text on the right-hand part of the screen.
-    You don't need to code anything, but you may want to read and
-    understand this part.
+    Takes in a list of strings called messages and displays each one on the next line.
     """
     textSize = 20
     font = pygame.font.Font(None, 20)
@@ -89,26 +88,9 @@ def new_game():
     elif result == 2: #USER SELETED OPTIONS
         print "you have no options -- yet!"
 
-def draw_grid(screen):
-    """
-    Draw the border grid on the screen.
-    """
-    """
-    #draw the vertical lines
-    for i in range(NUM_COLS + 1):
-        start_pos_top = get_col_left_loc(i, WIDTH)
-        pygame.draw.line(screen, red, (start_pos_top, 10), (start_pos_top, NUM_ROWS*HEIGHT + 10), 1)
-
-    #draw the horizontal lines
-    for i in range(NUM_ROWS+1):
-        start_pos_left = get_row_top_loc(i, HEIGHT)
-        pygame.draw.line(screen, red, (10, start_pos_left), (NUM_COLS*WIDTH + 10, start_pos_left), 1)
-    """ 
-    pass
 # Main program Loop: (called by new_game)
 def main_loop(screen, board, moveCount, clock, stop, pause):
     board.squares.draw(screen) # draw Sprites (Squares)
-    draw_grid(screen)
     board.thePlayer.draw(screen) # draw player Sprite
     board.theItems.draw(screen)
     pygame.display.flip() # update screen
@@ -130,16 +112,16 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             elif event.type==pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                         board.player.move_right()
-                        draw_grid(screen)
                         board.squares.draw(screen)
                         board.theItems.draw(screen)
                         board.thePlayer.draw(screen)
+                        pygame.display.flip()
                 elif event.key == pygame.K_LEFT:
                         board.player.move_left()
-                        draw_grid(screen)
                         board.squares.draw(screen)
                         board.theItems.draw(screen)
                         board.thePlayer.draw(screen)
+                        pygame.display.flip()
                 elif event.key==pygame.K_p:
                     if pause:
                         pause = False
@@ -148,8 +130,6 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
         
         if stop == False and pause == False and board.player.health>0: 
             board.squares.draw(screen) # draw Sprites (Squares)
-            # draw the grid here
-            draw_grid(screen)
             board.thePlayer.draw(screen) # draw player Sprite
             board.theItems.draw(screen)
             update_text(screen, ["Meters traveled: ",
@@ -178,19 +158,25 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 "unless you lose all health,",
                 "and you fall over from",
                 "extreme hunger and shame.",
-                "Go as far as you can!"])
+                "Go as far as you can!",
+                "(you can pause with 'p')"])
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
-            
-            if moveCount % 5 == 0: #actually moving things down
+
+            modulo=5
+
+            if moveCount%50==0 and modulo<0: #increase speed of game as it progresses
+                modulo-=1
+    
+            if moveCount % modulo == 0: #actually moving things down
                 board.update_board(moveCount) #will progress everything 1 row down
                 board.squares.draw(screen) # draw Sprites (Squares)
-                draw_grid(screen)
                 board.thePlayer.draw(screen) # draw player Sprite
                 board.theItems.draw(screen)
                 pygame.display.flip()
 
+        #The menu that pops up when the player loses
         if board.player.health<=0:
             result = losers_menu(screen)
             pygame.display.flip()
@@ -198,7 +184,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 print ":("
             elif result == 1: #USER SELECTED NEW GAME
                 board = Board()
-                main_loop(screen, board, moveCount, clock, False, False)
+                main_loop(screen, board, moveCount, clock, False, False) # call a new game
             elif result == 2: #USER SELETED OPTIONS
                 print "you have no options -- yet!"       
     pygame.quit() # closes things, keeps idle from freezing
@@ -320,7 +306,7 @@ class Board(object):
         #Now everything has been moved down, leaving first row empty
         
         #increases difficulty as time passes by changing probabilities 
-        probability_list=[.3, .02]
+        probability_list=[.3, .05]
         if moveCount>1000:
             probability_list=[.32,.015]
         if moveCount>2000:
@@ -463,6 +449,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
         self.health=5
+
         
     def get_current_square(self):
         """
