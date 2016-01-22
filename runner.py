@@ -184,7 +184,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
             moveCount += 1
             
             if moveCount % 5 == 0: #actually moving things down
-                board.update_board() #will progress everything 1 row down
+                board.update_board(moveCount) #will progress everything 1 row down
                 board.squares.draw(screen) # draw Sprites (Squares)
                 draw_grid(screen)
                 board.thePlayer.draw(screen) # draw player Sprite
@@ -289,7 +289,7 @@ class Board(object):
         return self.boardSquares[0][col]
         #power = how much damage it deals
             
-    def update_board(self):
+    def update_board(self, moveCount):
         """
         Will call move_down on every square in the grid
         """
@@ -319,8 +319,22 @@ class Board(object):
             self.boardSquares[location[0]][location[1]] = k
         #Now everything has been moved down, leaving first row empty
         
+        #increases difficulty as time passes by changing probabilities 
+        probability_list=[.3, .02]
+        if moveCount>1000:
+            probability_list=[.32,.015]
+        if moveCount>2000:
+            probability_list=[.34,.013]
+        if moveCount>4000:
+            probability_list=[.35,.011]
+        if moveCount>7000:
+            probability_list=[.35,.005]
+        if moveCount>10000:
+            probability_list=[.38,.0025]
+        print probability_list
+
         #Filling in the now-vacant first row
-        for fr_item in self.generate_new_row():
+        for fr_item in self.generate_new_row(probability_list):
             if not isinstance(fr_item, Square):
                self.items.append(fr_item)
                self.theItems.add(fr_item)
@@ -344,12 +358,13 @@ class Board(object):
             location = k.get_location() #returns a list
             self.boardSquares[location[0]][location[1]] = k  
                     
-    def generate_new_row(self, probability_list=[.30,.05]):
+    def generate_new_row(self, probability_list):
         """
         Takes in a list of probabilities [% obstacle, % food] and generates
         a row with those probabilities
         Returns a list
         """
+
         self.checkedLocations=[]
         plausible=False
         #probability_list = percent chance of getting an obstacle, food
