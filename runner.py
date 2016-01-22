@@ -184,6 +184,7 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 print ":("
             elif result == 1: #USER SELECTED NEW GAME
                 board = Board()
+                moveCount = 0
                 main_loop(screen, board, moveCount, clock, False, False) # call a new game
             elif result == 2: #USER SELETED OPTIONS
                 print "you have no options -- yet!"       
