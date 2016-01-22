@@ -462,7 +462,7 @@ class Player(pygame.sprite.Sprite):
         self.board = board
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
-        self.health=10
+        self.health=5
         
     def get_current_square(self):
         """
