@@ -131,11 +131,13 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 if event.key == pygame.K_RIGHT:
                         board.player.move_right()
                         draw_grid(screen)
+                        board.squares.draw(screen)
                         board.theItems.draw(screen)
                         board.thePlayer.draw(screen)
                 elif event.key == pygame.K_LEFT:
                         board.player.move_left()
                         draw_grid(screen)
+                        board.squares.draw(screen)
                         board.theItems.draw(screen)
                         board.thePlayer.draw(screen)
                 elif event.key==pygame.K_p:
@@ -171,12 +173,12 @@ def main_loop(screen, board, moveCount, clock, stop, pause):
                 "decrease your health.",
                 "Collect more free food",
                 "to increase health.",
-                "You will infinitley continue",
+                "You will infinitely continue",
                 "through the Infinite",
                 "unless you lose all health,",
-                "in which case you lose.",
-                "",
-                "Try to travel the furtherest!"])
+                "and you fall over from",
+                "extreme hunger and shame.",
+                "Go as far as you can!"])
             pygame.display.flip() # update screen
             clock.tick(10)
             moveCount += 1
@@ -471,6 +473,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
 
+        self.has_collided()
+
     def move_right(self):
         """
         Moves the player one column to the right
@@ -482,10 +486,20 @@ class Player(pygame.sprite.Sprite):
         #actually changes player's location
         self.rect.x = get_col_left_loc(self.col)
         self.rect.y = get_row_top_loc(self.row)
+        
+        self.has_collided()
 
     def modify_health(self,potency): #get the potency from the check_potency method
         #Increase/decrease the health of the Player by the amount of potency of the object it collides with
-        self.health += potency 
+        self.health += potency
+        
+    def has_collided(self):
+        grid = self.board.boardSquares #2D array of items
+        if not isinstance(grid[self.row][self.col], Square): #NOT a square i.e. an obstacle or food
+            self.modify_health(grid[self.row][self.col].get_potency())
+            
+            #"remove" the obstacle/food and replace with a square
+            self.board.boardSquares[self.row][self.col] = Square(self.row,self.col, white)
 
     """
     def check_potency (self,objs): #objs is a list
